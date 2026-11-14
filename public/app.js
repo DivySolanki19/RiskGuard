@@ -19,6 +19,7 @@ import {
   announce,
   download,
   openEditor,
+  confirmAction,
 } from "./common.js";
 const KEY = "riskguard.register.v1";
 const now = new Date();
@@ -136,18 +137,18 @@ function render() {
     (b) =>
       (b.onclick = () => {
         const x = items.find((r) => r.id === b.dataset.delete);
-        if (confirm("Delete " + x.id + " from this browser?")) {
+        confirmAction("Delete " + x.id + " from this browser?", () => {
           items = items.filter((r) => r.id !== x.id);
           persist("Risk deleted.");
-        }
+        });
       }),
   );
   document.querySelector("#reset").onclick = () => {
-    if (confirm("Replace your risk edits with the original demo register?")) {
+    confirmAction("Replace your risk edits with the original demo register?", () => {
       items = structuredClone(risks);
       cell = null;
       persist("Demo register restored.");
-    }
+    });
   };
 }
 function edit(id) {
