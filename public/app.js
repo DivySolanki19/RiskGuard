@@ -42,7 +42,7 @@ const filters = {
   status: "All statuses",
 };
 document.querySelector("#app").innerHTML =
-  `<section class="hero" id="overview"><div><div class="eyebrow">Risk management workspace</div><h1>Turn exposure into action.</h1><p>A shared view of what matters, who owns it and what happens next.</p></div><div class="actions"><button id="export">↓ Export CSV</button><button id="print">Print report</button><button id="add" class="primary">+ Add risk</button></div></section><section class="toolbar" aria-label="Risk filters"><label>Search register<input id="search" type="search" placeholder="Title, owner or risk ID"></label><label>Category<select id="category"><option>All categories</option>${categories.map((x) => `<option>${x}</option>`).join("")}</select></label><label>Status<select id="risk-status"><option>All statuses</option>${statuses.map((x) => `<option>${x}</option>`).join("")}</select></label></section><p class="print-only">Report date: ${today}. Synthetic demo data. Export reflects current filters.</p><div id="results"></div>`;
+  `<section class="hero" id="overview"><div><div class="eyebrow">Risk management workspace</div><h1>Know your <span>exposure.</span></h1><p>A shared view of what matters, who owns it and what happens next.</p></div><div class="actions"><button id="export">↓ Export CSV</button><button id="print">Print report</button><button id="add" class="primary">+ Add risk</button></div></section><section class="toolbar" aria-label="Risk filters"><label>Search register<input id="search" type="search" placeholder="Title, owner or risk ID"></label><label>Category<select id="category"><option>All categories</option>${categories.map((x) => `<option>${x}</option>`).join("")}</select></label><label>Status<select id="risk-status"><option>All statuses</option>${statuses.map((x) => `<option>${x}</option>`).join("")}</select></label></section><p class="print-only">Report date: ${today}. Synthetic demo data. Export reflects current filters.</p><div id="results"></div>`;
 const filtered = () =>
   items.filter(
     (x) =>
@@ -144,11 +144,14 @@ function render() {
       }),
   );
   document.querySelector("#reset").onclick = () => {
-    confirmAction("Replace your risk edits with the original demo register?", () => {
-      items = structuredClone(risks);
-      cell = null;
-      persist("Demo register restored.");
-    });
+    confirmAction(
+      "Replace your risk edits with the original demo register?",
+      () => {
+        items = structuredClone(risks);
+        cell = null;
+        persist("Demo register restored.");
+      },
+    );
   };
 }
 function edit(id) {
@@ -253,13 +256,32 @@ document.querySelector("#export").onclick = () => {
 // Include mitigation details in printed reports, then restore the user's view.
 let printDetails = [];
 window.addEventListener("beforeprint", () => {
-  printDetails = [...document.querySelectorAll("details")].map(element => ({element, open:element.open}));
-  printDetails.forEach(({element}) => { element.open = true; });
+  printDetails = [...document.querySelectorAll("details")].map((element) => ({
+    element,
+    open: element.open,
+  }));
+  printDetails.forEach(({ element }) => {
+    element.open = true;
+  });
 });
 window.addEventListener("afterprint", () => {
-  printDetails.forEach(({element, open}) => { element.open = open; });
+  printDetails.forEach(({ element, open }) => {
+    element.open = open;
+  });
   printDetails = [];
 });
 document.querySelector("#print").onclick = () => window.print();
 render();
 if (loaded.warning) announce(loaded.warning);
+
+// Keep navigation state aligned with the section selected by mouse or keyboard.
+function updateNavigation() {
+  const active = location.hash || "#overview";
+  document.querySelectorAll("nav a").forEach((link) => {
+    if (link.getAttribute("href") === active)
+      link.setAttribute("aria-current", "location");
+    else link.removeAttribute("aria-current");
+  });
+}
+window.addEventListener("hashchange", updateNavigation);
+updateNavigation();

@@ -45,3 +45,7 @@ Ordinal scores are prioritisation aids, not probabilities or quantified losses. 
 ## Scaling path
 
 Introduce an authenticated API, schema migrations and transactional persistence before shared editing. Add optimistic concurrency, audit events, server-side validation, paginated queries, integration tests and observability. Keep the pure calculations separate and test them against accepted business examples before migrating the UI.
+
+## Visual identity
+
+A dark governance console uses violet accents, monospaced scores and severity colours for exposure scanning. Print overrides retain legibility on white paper. The dedicated `public/theme.css` layer owns the product identity; `styles.css` retains shared responsive primitives. Native inputs, keyboard focus and text-based status labels remain available.
